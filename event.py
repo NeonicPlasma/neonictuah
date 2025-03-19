@@ -78,8 +78,9 @@ class NewEvent(cmd.Cog):
         
         # Add player to game
         current_game.add_player(ctx.author)
+        await ctx.send(f"**{ctx.author.mention} has joined the game!** Current player count is **{len(current_game.players)}**.")
     
-    
+
 
 
     @game.command("start")
