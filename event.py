@@ -18,7 +18,7 @@ class NewEvent(cmd.Cog):
     def __init__(self, client: dc.Client):
 
         self.bot: dc.Client = client
-        self.current_game = None
+        self.current_games = {}
 
 
 
@@ -38,37 +38,61 @@ class NewEvent(cmd.Cog):
     @game.command("create")
     async def game_create(self, ctx: cmd.Context):
         
-        if self.current_game != None:
-            await ctx.send("There is currently an ongoing game! Wait until the current game is over.")
+        # Check if game already exists in this channel
+        channel_id: int = ctx.channel.id
+        if (ctx.channel.id in self.current_games):
+            await ctx.send("Game already exists in this channel")
             return
         
-        # 
+        # Check if command was run in a text channel
         if ctx.channel.guild != None or (not isinstance(ctx.channel, dc.TextChannel)):
             await ctx.send("Games can only be ran in text channels!")
             return
         
-        # Create game with the channel as a room
-        self.current_game = Game(ctx.channel)
+        # Create game with the channel as a room, storing it in the games dictionary
+        self.current_games[channel_id] = Game(ctx.channel)
         await ctx.send("Game has been created!")
+
 
 
     @game.command("join")
     async def game_join(self, ctx: cmd.Context):
         
-        if self.current_game == None:
-            await ctx.send("There is currently no ongoing game")
+        # Check if game currently running in this channel
+        channel_id: int = ctx.channel.id
+        current_game: Game = self.current_games.get(channel_id, None)
+        if current_game == None:
+            await ctx.send("No game running in this channel")
+            return
+    
+        # Check if the game has already started
+        if current_game.active == True:
+            await ctx.send("Is already active")
             return
         
-        game_channel: dc.TextChannel = self.current_game.channel
-        if game_channel.id != ctx.channel.id:
-            await ctx.send("There is currently no ongoing game in this channel")
+        # Check if this player is already in the game
+        user_id: int = ctx.author.id
+        if user_id in current_game.players:
+            await ctx.send("You are already in this game")
             return
         
+        # Add player to game
+        current_game.add_player(ctx.author)
+    
+    
+
+
+    @game.command("start")
+    async def game_start(self, ctx: cmd.Context):
         
-
-
-    @game.command("create")
-    async def game_create(self, ctx: cmd.Context):
-        await ctx.send("POKKEN 😭😭😭😭😭😭😭😭😭😭😭😭😭😭")
+        channel_id: int = ctx.channel.id
+        current_game: Game = self.current_games.get(channel_id, None)
+        if (current_game == None):
+            await ctx.send("No game running in this channel")
+            return
+    
+        if current_game.active == True:
+            await ctx.send("Is already active")
+            return
 
 

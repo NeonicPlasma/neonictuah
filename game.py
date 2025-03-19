@@ -7,10 +7,10 @@ import asyncio
 
 class Player():
 
-    def __init__(self, user: User):
+    def __init__(self, member: Member):
 
-        self.user_id: int = user.id
-        self.username: str = user.name
+        self.user_id: int = member.id
+        self.username: str = member.name
 
         self.game_info: dict = {}
         self.minigame_info: dict = {}
@@ -32,26 +32,27 @@ class Game():
         self.current_minigame: Minigame = None
 
         # Game parameters
-        self.game_parameters = {}
+        self.game_parameters: dict = {}
 
 
-    def set_players(self, players: set) -> None:
+    def add_player(self, member: Member) -> None:
         
-        # Clear the current player list
-        self.players = {}
-
-        # Add new players to list
-        for player in players:
-            self.players[player.id] = player
+        player: Player = Player(member)
+        self.players[player.user_id] = player
 
 
-    async def start_game(self):
+    def remove_player(self, player: Player) -> None:
+
+        self.players.pop(player.user_id)
+        
+
+    async def start_game(self) -> None:
 
         await channel.send("The first minigame will begin in 10 seconds!")
         await asyncio.sleep(10)
         
 
-    async def begin_minigame(self):
+    async def begin_minigame(self) -> None:
 
         self.round_num += 1
 
