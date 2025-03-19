@@ -12,9 +12,6 @@ import copy
 
 class NewEvent(cmd.Cog):
 
-
-
-
     def __init__(self, client: dc.Client):
 
         self.bot: dc.Client = client
@@ -45,14 +42,13 @@ class NewEvent(cmd.Cog):
             return
         
         # Check if command was run in a text channel
-        if ctx.channel.guild != None or (not isinstance(ctx.channel, dc.TextChannel)):
+        if ctx.channel.guild == None or (not isinstance(ctx.channel, dc.TextChannel)):
             await ctx.send("Games can only be ran in text channels!")
             return
         
         # Create game with the channel as a room, storing it in the games dictionary
         self.current_games[channel_id] = Game(ctx.channel)
         await ctx.send("Game has been created!")
-
 
 
     @game.command("join")
@@ -81,10 +77,8 @@ class NewEvent(cmd.Cog):
         await ctx.send(f"**{ctx.author.mention} has joined the game!** Current player count is **{len(current_game.players)}**.")
     
 
-
-
     @game.command("start")
-    async def game_start(self, ctx: cmd.Context):
+    async def game_start(self, ctx: cmd.Context) -> None:
         
         channel_id: int = ctx.channel.id
         current_game: Game = self.current_games.get(channel_id, None)
@@ -95,5 +89,13 @@ class NewEvent(cmd.Cog):
         if current_game.active == True:
             await ctx.send("Is already active")
             return
+        
+        # Check if game has less than 2 players
+        if len(current_game.players) < 2:
+            await ctx.send("Not enough players")
+            return
+        
+        # Start game
+        await current_game.start_game()
 
 

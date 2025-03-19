@@ -24,7 +24,7 @@ class Game():
 
         self.channel: TextChannel = channel
 
-        self.active: bool = True
+        self.active: bool = False
         self.round_num: int = 0
 
         # Create list of players
@@ -48,8 +48,12 @@ class Game():
 
     async def start_game(self) -> None:
 
-        await channel.send("The first minigame will begin in 10 seconds!")
+        self.active = True
+
+        await self.channel.send("**Game is starting!**")
+        await self.channel.send("The first minigame will begin in 10 seconds!")
         await asyncio.sleep(10)
+        await self.channel.send("start game")
         
 
     async def begin_minigame(self) -> None:
