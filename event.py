@@ -4,11 +4,10 @@ from collections.abc import *
 from typing import *
 
 from game import Game
+from Minigames.__minigameloader import get_minigames_list
 
 import os
 import copy
-
-
 
 class NewEvent(cmd.Cog):
 
@@ -16,21 +15,28 @@ class NewEvent(cmd.Cog):
 
         self.bot: dc.Client = client
         self.current_games = {}
-
+        self.minigame_list = get_minigames_list()
 
 
     @cmd.Cog.listener("on_message")
     async def on_message(self, message: dc.Message):
 
-        # Retrieve message information
-        author: dc.Member = message.author
-        channel: dc.TextChannel = message.channel
+        # Check if channel is currently holding a game
+        channel_game: Game = self.current_games.get(message.channel.id, None)
+
+        if (channel_game == None):
+            return
+        
+        # Pass on_message method to the Game so it can handle it internally
+        await channel_game.on_message(message)
+
 
 
     @cmd.group("game")
     async def game(self, ctx: cmd.Context):
         pass
-        
+
+
         
     @game.command("create")
     async def game_create(self, ctx: cmd.Context):
@@ -49,6 +55,7 @@ class NewEvent(cmd.Cog):
         # Create game with the channel as a room, storing it in the games dictionary
         self.current_games[channel_id] = Game(ctx.channel)
         await ctx.send("Game has been created!")
+
 
 
     @game.command("join")
@@ -77,6 +84,7 @@ class NewEvent(cmd.Cog):
         await ctx.send(f"**{ctx.author.mention} has joined the game!** Current player count is **{len(current_game.players)}**.")
     
 
+
     @game.command("start")
     async def game_start(self, ctx: cmd.Context) -> None:
         
@@ -91,9 +99,12 @@ class NewEvent(cmd.Cog):
             return
         
         # Check if game has less than 2 players
-        if len(current_game.players) < 2:
+        if len(current_game.players) < 1:
             await ctx.send("Not enough players")
             return
+        
+        # Set minigame list
+        current_game.set_minigames(copy.deepcopy(self.minigame_list))
         
         # Start game
         await current_game.start_game()
