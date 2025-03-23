@@ -4,6 +4,7 @@ import os
 import asyncio
 import random
 from game import *
+from typing import *
 
 class Add(Minigame):
 
@@ -13,8 +14,8 @@ class Add(Minigame):
         self.game: Game = game
 
         self.game_active: bool = False
-        self.can_respond: list = []
-        self.game_rankings: list = []
+        self.can_respond: list[Player] = []
+        self.game_rankings: list[Player] = []
 
 
     async def start_minigame(self) -> None:

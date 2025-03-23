@@ -5,6 +5,7 @@ import os
 import asyncio
 import random
 from game import *
+from typing import *
 from Helper.__text import *
 
 class LargestNum(Minigame):
@@ -15,10 +16,10 @@ class LargestNum(Minigame):
         self.game: Game = game
 
         self.game_active: bool = False
-        self.game_rankings: list = []
+        self.game_rankings: list[Player] = []
 
-        self.num_list: list = []
-        self.responses: dict = {}
+        self.num_list: list[int] = []
+        self.responses: Dict[Player, int] = {}
 
         self.answer: int
 

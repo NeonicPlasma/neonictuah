@@ -3,6 +3,8 @@ from discord import *
 import os
 import asyncio
 import random
+from typing import *
+
 
 class Player():
 
@@ -13,7 +15,7 @@ class Player():
 
         self.game: Game = game
         self.score: int = 0
-        self.score_history: set = []
+        self.score_history: set[int] = []
 
 
     def add_score(self, points: int, cap: bool) -> None:
@@ -31,8 +33,6 @@ class Player():
         return f"<@{self.user_id}>"
 
 
-
-
 class Game():
 
     def __init__(self, channel: TextChannel):
@@ -43,13 +43,13 @@ class Game():
         self.round_num: int = 0
 
         # Create list of players
-        self.players: dict = {}
-        self.minigame_history: dict = {}
+        self.players: Dict[int, Player] = {}
+        self.minigame_history: list[Player] = {}
         self.current_minigame: Minigame = None
-        self.minigame_list: list = []
+        self.minigame_list: list[Minigame] = []
 
         # Game parameters
-        self.game_parameters: dict = {
+        self.game_parameters: dict[str, Any] = {
             "SCORING": [5, 2, 1], # The amount of points each placement gets after a minigame
             "SCORE_GOAL": 50, # Amount of points required to win
             "END_ON_WIN": False, # Whether you must end on a winning minigame to win
@@ -120,7 +120,7 @@ class Game():
         # Add scores to players
         points: int
         placement: int
-        point_gains: dict = {}
+        point_gains: Dict[Player, int] = {}
         for placement, points in enumerate(self.game_parameters["SCORING"]):
             try:
                 player_scoring: Player = player_placements[placement]
@@ -146,7 +146,7 @@ class Game():
 
 
     
-    def get_sorted_players(self) -> list:
+    def get_sorted_players(self) -> list[Player]:
 
         # Get players sorted
         players_by_points = list(self.players.values())
