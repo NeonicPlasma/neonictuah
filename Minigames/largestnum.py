@@ -28,26 +28,26 @@ class LargestNum(Minigame):
         self.game_active = True
         self.can_respond = [player for player in self.game.players.values()]
 
-        # Create random numbers and buttons
+        # Create random numbers and buttons - generating a 4x4 grid
         button_view: View = View(timeout=90)
+        for row in range(4):
+            for i in range(4):
 
-        for i in range(15):
-
-            # Generate random number, and make sure it is unique to all other numbers
-            num: int = random.randint(100, 999)
-            while num in self.num_list:
+                # Generate random number, and make sure it is unique to all other numbers
                 num: int = random.randint(100, 999)
+                while num in self.num_list:
+                    num: int = random.randint(100, 999)
 
-            # Create button
-            button: Button = ui.Button(style=ButtonStyle.blurple, label=f"{num}", custom_id=f"{i}")
-            button.callback = self.on_button_press
-            button_view.add_item(button)
+                # Create button
+                button: Button = ui.Button(style=ButtonStyle.blurple, label=f"{num}", custom_id=f"{i + row * 4}", row=row)
+                button.callback = self.on_button_press
+                button_view.add_item(button)
 
-            self.num_list.append(num)
+                self.num_list.append(num)
 
-            # Check if the number is the current maximum
-            if max(self.num_list) == num:
-                self.answer = num        
+                # Check if the number is the current maximum
+                if max(self.num_list) == num:
+                    self.answer = num        
 
         # Create embed display
         embed = Embed(

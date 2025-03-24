@@ -152,7 +152,7 @@ class Game():
         players_by_points = list(self.players.values())
         players_by_points.sort(key = lambda p: p.score, reverse = True)
         return players_by_points
-
+        
 
     
     async def post_leaderboard(self, point_gains: dict) -> None:
@@ -194,6 +194,6 @@ class Minigame():
     async def start_minigame(self) -> None:
         pass
 
-    async def on_message(self, message: Message) -> None:
+    async def on_message(self, message: Message, player_author: Player) -> None:
         pass
         

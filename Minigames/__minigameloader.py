@@ -7,8 +7,13 @@ from Minigames.add import Add
 minigames_list = []
 file_list = [x[:-3] for x in os.listdir("Minigames") if x.endswith(".py") and not x.startswith("__")]
 
+EXCLUDE = ["ADD", "LARGESTNUM"]
+
 for command_file in file_list:
 	try:
+
+		if command_file.upper() in EXCLUDE:
+			continue
 		
 		# Import file as module
 		info: ModuleType = importlib.import_module("Minigames." + command_file)
